@@ -1,0 +1,25 @@
+Demo Steps:
+
+1. Start API Server:
+   uvicorn api_server:app --reload
+
+2. Open Swagger UI:
+   http://127.0.0.1:8000/docs
+
+3. Run Example Instruction:
+
+{
+  "instruction": "Go to https://example.com and extract the heading"
+}
+
+Another example: 
+
+{
+  "instruction": "Go to https://the-internet.herokuapp.com/dynamic_loading/1 Click the start button Wait 5 seconds Extract the hello world text"
+}
+
+Advanced example demo:
+
+{
+  "instruction": "Go to https://the-internet.herokuapp.com/login Fill username tomsmith Fill password SuperSecretPassword! Click login button Extract success message"
+}
