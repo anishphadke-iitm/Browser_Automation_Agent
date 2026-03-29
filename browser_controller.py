@@ -9,7 +9,7 @@ class BrowserController:
         self.playwright = sync_playwright().start()
 
         self.browser = self.playwright.chromium.launch(
-            headless=False
+            headless=True
         )
 
         self.page = self.browser.new_page()
