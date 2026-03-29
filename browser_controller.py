@@ -64,21 +64,29 @@ class BrowserController:
     def retry_action(self, func, *args):
 
         retries = 3
+        last_error = None
 
         for attempt in range(retries):
 
             try:
+
                 return func(*args)
 
             except Exception as e:
 
+                last_error = e
+
                 self.log(
-                    f"Retry {attempt + 1} failed: {e}"
+                    f"Retry {attempt + 1}/{retries} failed: {e}"
                 )
 
                 time.sleep(2)
 
-        self.log("Action failed after retries.")
+        self.screenshot("failure")
+
+        raise RuntimeError(
+            f"Action failed after {retries} retries: {last_error}"
+        )
 
     def navigate(self, url):
 

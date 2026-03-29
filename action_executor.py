@@ -5,35 +5,56 @@ def execute_actions(plan):
 
     browser = BrowserController()
 
-    url = plan.get("url")
+    results = []
 
-    if url:
-        browser.navigate(url)
+    try:
 
-    actions = plan.get("actions", [])
+        url = plan.get("url")
 
-    for action in actions:
+        if url:
+            browser.navigate(url)
 
-        action_type = action.get("type")
+        actions = plan.get("actions", [])
 
-        if action_type == "click":
-            browser.click(action["selector"])
+        for action in actions:
 
-        elif action_type == "fill":
-            browser.fill(
-                action["selector"],
-                action["text"]
-            )
+            action_type = action.get("type")
 
-        elif action_type == "extract":
-            browser.extract(
-                action["selector"]
-            )
+            if action_type == "click":
 
-        elif action_type == "wait":
-            browser.wait(
-                action.get("seconds", 2)
-            )
+                browser.click(
+                    action["selector"]
+                )
 
-    browser.wait(5)
-    browser.close()
+            elif action_type == "fill":
+
+                browser.fill(
+                    action["selector"],
+                    action["text"]
+                )
+
+            elif action_type == "extract":
+
+                text = browser.extract(
+                    action["selector"]
+                )
+
+                # Save extracted result
+                results.append({
+                    "selector": action["selector"],
+                    "value": text
+                })
+
+            elif action_type == "wait":
+
+                browser.wait(
+                    action.get("seconds", 2)
+                )
+
+        browser.wait(5)
+
+        return results
+
+    finally:
+
+        browser.close()

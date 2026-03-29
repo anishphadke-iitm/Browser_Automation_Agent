@@ -1,11 +1,21 @@
 import requests
 import os
 import json
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
 
 API_KEY = os.getenv("MERCURY_API_KEY")
+
+
+def clean_json(content):
+    """
+    Remove markdown code fences if Mercury returns ```json blocks.
+    """
+    content = re.sub(r"```json|```", "", content)
+    return content.strip()
+
 
 def get_actions_from_instruction(instruction):
 
@@ -77,18 +87,33 @@ Example:
         "temperature": 0
     }
 
-    response = requests.post(
-        url,
-        headers=headers,
-        json=data
-    )
+    try:
 
-    result = response.json()
+        response = requests.post(
+            url,
+            headers=headers,
+            json=data
+        )
 
-    # Extract Mercury content
-    content = result["choices"][0]["message"]["content"]
+        # Important fix
+        response.raise_for_status()
 
-    # Convert text JSON → Python dict
-    actions_json = json.loads(content)
+        result = response.json()
 
-    return actions_json
+        content = result["choices"][0]["message"]["content"]
+
+        # Clean markdown fences
+        cleaned = clean_json(content)
+
+        actions_json = json.loads(cleaned)
+
+        return actions_json
+
+    except Exception as e:
+
+        print("Mercury API Error:")
+        print(e)
+
+        raise RuntimeError(
+            f"Failed to generate plan from Mercury: {e}"
+        )

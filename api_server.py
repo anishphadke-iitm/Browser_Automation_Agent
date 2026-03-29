@@ -28,9 +28,11 @@ def run_agent(request: InstructionRequest):
     print("\nGenerated plan:")
     print(plan)
 
-    execute_actions(plan)
+    # Get results
+    results = execute_actions(plan)
 
     return {
         "status": "success",
-        "message": "Agent executed instruction"
+        "message": "Agent executed instruction",
+        "results": results
     }
